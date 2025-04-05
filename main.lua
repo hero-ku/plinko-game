@@ -2,16 +2,17 @@ local Vec2 = require("Vec2")
 
 local PEG_RADIUS = 15
 local PEG_SEGMENTS = 50
-local GRAVITY = 300
+local GRAVITY = 500
+local BOUNCE = 1
 
 local world = love.physics.newWorld(0, GRAVITY, true)
 
-local unusedPegs = 0
+local unusedPegs = 200
 
 local ballBody = love.physics.newBody(world, 400, 300, "dynamic")
 local ballShape = love.physics.newCircleShape(PEG_RADIUS * 0.8)
 local ballFixture = love.physics.newFixture(ballBody, ballShape)
-ballFixture:setRestitution(1) -- bounce
+ballFixture:setRestitution(BOUNCE) -- bounce
 
 local function dropBall()
     local x = math.random(0, love.graphics.getWidth())
@@ -54,6 +55,7 @@ function love.load()
     love.window.setMode(800, 600, {
         resizable = false,
         vsync = 0, -- off
+        msaa = 16,
         highdpi = true,
     })
 

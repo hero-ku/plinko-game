@@ -72,7 +72,14 @@ end
 
 function love.update(deltaTime)
     world:update(deltaTime)
-    if ballBody:getY() > love.graphics.getHeight() then
+    local ballX, ballY = ballBody:getPosition()
+    local velX, velY = ballBody:getLinearVelocity()
+
+    if ballX < PEG_RADIUS * 0.4 or ballX > love.graphics.getWidth() - PEG_RADIUS * 0.4 then
+        ballBody:setLinearVelocity(-velX, velY)
+    end
+
+    if ballY > love.graphics.getHeight() then
         dropBall()
     end
 end

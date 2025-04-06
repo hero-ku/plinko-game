@@ -9,12 +9,8 @@ local world = love.physics.newWorld(0, GRAVITY, true)
 
 local pegCost = 1
 local money = 5
-
 local unusedPegs = 0
-
 local pegPositions = {}
-
-
 
 local ballBody = love.physics.newBody(world, 400, 300, "dynamic")
 local ballShape = love.physics.newCircleShape(PEG_RADIUS * 0.8)
@@ -41,6 +37,12 @@ local function dropBall()
     ballBody:setPosition(x, y)
 end
 
+local function createPeg(position)
+    local body = love.physics.newBody(world, position.x, position.y, "static")
+    local shape = love.physics.newCircleShape(PEG_RADIUS)
+    local fixture = love.physics.newFixture(body, shape)
+end
+
 local function drawPegPreview()
     local mouseX, mouseY = love.mouse.getPosition()
     love.graphics.setColor(1, 1, 1, 0.5)
@@ -65,12 +67,6 @@ local function getPegsInRadius(x, y)
     end
 
     return pegs
-end
-
-local function createPeg(pos)
-    local body = love.physics.newBody(world, pos.x, pos.y, "static")
-    local shape = love.physics.newCircleShape(PEG_RADIUS)
-    local fixture = love.physics.newFixture(body, shape)
 end
 
 function love.load()

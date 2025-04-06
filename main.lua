@@ -9,8 +9,10 @@ local world = love.physics.newWorld(0, GRAVITY, true)
 
 local pegCost = 1
 local money = 5
+local baseCollected = 0
 local unusedPegs = 0
 local pegPositions = {}
+local multipliers = {1,2,5,2,1}
 
 local ballBody = love.physics.newBody(world, 400, 300, "dynamic")
 local ballShape = love.physics.newCircleShape(PEG_RADIUS * 0.8)
@@ -19,8 +21,9 @@ ballFixture:setRestitution(BOUNCE) -- bounce
 
 local function processCollision(fixture1, fixture2, contact)
     if fixture1 == ballFixture or fixture2 == ballFixture then
-        money = money + 1
-        print("money: " .. money)
+        local otherFixture = fixture1 == ballFixture and fixture2 or fixture1
+        otherFixture:getBody():destroy()
+        baseCollected = baseCollected + 1
     end
 end
 
@@ -101,6 +104,20 @@ function love.update(deltaTime)
     end
 
     if ballY > love.graphics.getHeight() then
+        local slot = math.ceil(ballX / love.graphics.getWidth() * 5)
+        money = money + baseCollected * multipliers[slot]
+        baseCollected = 0
+
+        for _, body in ipairs(world:getBodies()) do
+            if body:getType() == "static" then
+                body:destroy()
+            end
+        end
+
+        for _, position in ipairs(pegPositions) do
+            createPeg(position)
+        end
+
         dropBall()
     end
 end
@@ -123,7 +140,17 @@ function love.draw()
         end
     end
 
+    local width, height = love.graphics.getDimensions()
+    for i = 0, 4 do
+        love.graphics.print(multipliers[i+1] .. "x", i * width/5 + width/10 - 5, height - 50)
+
+        if i > 0 then
+            love.graphics.rectangle("fill", i * width/5, height - 100, 1, 100)
+        end
+    end
+
     love.graphics.print("Money: " .. money, 100, 100)
-    love.graphics.print("Peg Cost: " .. pegCost, 100, 120)
-    love.graphics.print("Un-used Pegs: " .. unusedPegs, 100, 140)
+    love.graphics.print("Collected: " .. baseCollected, 100, 120)
+    love.graphics.print("Peg Cost: " .. pegCost, 100, 140)
+    love.graphics.print("Un-used Pegs: " .. unusedPegs, 100, 160)
 end

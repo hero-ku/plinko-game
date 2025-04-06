@@ -18,10 +18,7 @@ local ballFixture = love.physics.newFixture(ballBody, ballShape)
 ballFixture:setRestitution(BOUNCE) -- bounce
 
 local function processCollision(fixture1, fixture2, contact)
-    if fixture1 == ballFixture and fixture2 ~= ballFixture then
-        money = money + 1
-        print("money: " .. money)
-    elseif fixture1 ~= ballFixture and fixture2 == ballFixture then
+    if fixture1 == ballFixture or fixture2 == ballFixture then
         money = money + 1
         print("money: " .. money)
     end

@@ -92,7 +92,7 @@ function love.mousereleased()
     table.insert(pegPositions, pos)
     createPeg(pos)
     money = money - pegCost
-    pegCost = math.ceil(pegCost^1.5) + 1
+    pegCost = math.ceil((pegCost + 1)^1.05)
 end
 
 

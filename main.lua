@@ -1,5 +1,7 @@
 local Vec2 = require("Vec2")
 
+local backgroundImage = love.graphics.newImage("assets/plinkoBackground.png")
+
 local PEG_RADIUS = 15
 local PEG_SEGMENTS = 50
 local GRAVITY = 500
@@ -123,6 +125,7 @@ function love.update(deltaTime)
 end
 
 function love.draw()
+    love.graphics.draw(backgroundImage)
     drawPegPreview()
 
     for _, body in ipairs(world:getBodies()) do

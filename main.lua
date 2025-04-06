@@ -7,20 +7,38 @@ local BOUNCE = 1
 
 local world = love.physics.newWorld(0, GRAVITY, true)
 
-local unusedPegs = 200
+local pegCost = 1
+local money = 5
+
+local unusedPegs = 0
+
+local pegPositions = {}
+
+
 
 local ballBody = love.physics.newBody(world, 400, 300, "dynamic")
 local ballShape = love.physics.newCircleShape(PEG_RADIUS * 0.8)
 local ballFixture = love.physics.newFixture(ballBody, ballShape)
 ballFixture:setRestitution(BOUNCE) -- bounce
 
+world:setCallbacks(function(fixture1, fixture2, contact)
+    if fixture1 == ballFixture and fixture2 ~= ballFixture then
+        money = money + 1
+        print("money: " .. money)
+    elseif fixture1 ~= ballFixture and fixture2 == ballFixture then
+        money = money + 1
+        print("money: " .. money)
+    end
+end)
+
 local function dropBall()
-    local x = math.random(0, love.graphics.getWidth())
+    local width = love.graphics.getWidth()
+
+    local x = width / 2 + math.random(-width / 4,  width / 4)
     local y = 100
 
     ballBody:setLinearVelocity(0, 0)
     ballBody:setPosition(x, y)
-    unusedPegs = unusedPegs + 1
 end
 
 local function drawPegPreview()
@@ -49,6 +67,12 @@ local function getPegsInRadius(x, y)
     return pegs
 end
 
+local function createPeg(pos)
+    local body = love.physics.newBody(world, pos.x, pos.y, "static")
+    local shape = love.physics.newCircleShape(PEG_RADIUS)
+    local fixture = love.physics.newFixture(body, shape)
+end
+
 function love.load()
     love.graphics.setBackgroundColor(0.6, 0.3, 0.3)
     love.mouse.setVisible(false)
@@ -64,13 +88,14 @@ end
 
 function love.mousereleased()
     local mouseX, mouseY = love.mouse.getPosition()
-    if #getPegsInRadius(mouseX, mouseY) > 0 or unusedPegs < 1 then return end
-    unusedPegs = unusedPegs - 1
-
-    local body = love.physics.newBody(world, mouseX, mouseY, "static")
-    local shape = love.physics.newCircleShape(PEG_RADIUS)
-    local fixture = love.physics.newFixture(body, shape)
+    if #getPegsInRadius(mouseX, mouseY) > 0 or money < pegCost then return end
+    local pos = Vec2.new(mouseX, mouseY)
+    table.insert(pegPositions, pos)
+    createPeg(pos)
+    money = money - pegCost
+    pegCost = math.ceil(pegCost^1.5) + 1
 end
+
 
 function love.update(deltaTime)
     world:update(deltaTime)
@@ -103,4 +128,8 @@ function love.draw()
             love.graphics.setColor(1, 1, 1, 1)
         end
     end
+
+    love.graphics.print("Money: " .. money, 100, 100)
+    love.graphics.print("Peg Cost: " .. pegCost, 100, 120)
+    love.graphics.print("Un-used Pegs: " .. unusedPegs, 100, 140)
 end

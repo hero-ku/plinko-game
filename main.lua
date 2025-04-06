@@ -17,7 +17,7 @@ local ballShape = love.physics.newCircleShape(PEG_RADIUS * 0.8)
 local ballFixture = love.physics.newFixture(ballBody, ballShape)
 ballFixture:setRestitution(BOUNCE) -- bounce
 
-world:setCallbacks(function(fixture1, fixture2, contact)
+local function processCollision(fixture1, fixture2, contact)
     if fixture1 == ballFixture and fixture2 ~= ballFixture then
         money = money + 1
         print("money: " .. money)
@@ -25,7 +25,7 @@ world:setCallbacks(function(fixture1, fixture2, contact)
         money = money + 1
         print("money: " .. money)
     end
-end)
+end
 
 local function dropBall()
     local width = love.graphics.getWidth()
@@ -79,6 +79,7 @@ function love.load()
         highdpi = true,
     })
 
+    world:setCallbacks(processCollision)
     dropBall()
 end
 

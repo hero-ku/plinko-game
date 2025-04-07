@@ -1,6 +1,8 @@
 local Vec2 = require("Vec2")
 
-local backgroundImage = love.graphics.newImage("assets/plinkoBackground.png")
+local backgroundImage = love.graphics.newImage("assets/sprites/plinkoBackground.png")
+
+local defaultFont = love.graphics.newFont("assets/fonts/KGRedHands.ttf", 20)
 
 local PEG_RADIUS = 15
 local PEG_SEGMENTS = 50
@@ -125,7 +127,7 @@ function love.update(deltaTime)
 end
 
 function love.draw()
-    love.graphics.draw(backgroundImage)
+    love.graphics.setFont(defaultFont)
     drawPegPreview()
 
     for _, body in ipairs(world:getBodies()) do
